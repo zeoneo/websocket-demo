@@ -1,0 +1,54 @@
+<html>
+
+<head>
+    <title>Web Socket Demo</title>
+</head>
+
+<body>
+    <div>
+        <input id="input-msg" type="text" />
+        <button id="send-btn">Send Message</button>
+        <ul id="messages"></ul>
+    </div>
+    <script>
+        var connected = false;
+        function setConnected(val) {
+            connected = val;
+        }
+        function connect() {
+            ws = new WebSocket('ws://localhost:8080/helloAll');
+            ws.onmessage = function (data) {
+                showGreeting(data.data);
+            }
+            setConnected(true);
+        }
+
+        function disconnect() {
+            if (ws != null) {
+                ws.close();
+            }
+            setConnected(false);
+            console.log("Disconnected");
+        }
+
+        function showGreeting(message) {
+            let msgList = document.querySelector("#messages");
+            let newMsg = document.createElement('li');
+            newMsg.innerHTML = message;
+            msgList.appendChild(newMsg);
+        }
+
+        window.onload = function () {
+            connect();
+            document.querySelector('#send-btn').onclick = function () {
+                if (connected) {
+                    ws.send(document.querySelector("#input-msg").value);
+                } else {
+                    console.error("Websocket is not connected. Please connect first")
+                }
+            }
+        }
+    </script>
+</body>
+
+</html>
